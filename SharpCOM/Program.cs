@@ -11,7 +11,8 @@ namespace SharpCOM
             string Method = null;
             string ComputerName = null;
             string Directory = "C:\\WINDOWS\\System32\\";
-            string Parameters = "";
+            string Parameters = "/c";
+            string BaseCommand = "cmd.exe";
             string Command = null;
             bool showhelp = false;
             OptionSet opts = new OptionSet()
@@ -19,6 +20,7 @@ namespace SharpCOM
                 { "Method=", " --Method ShellWindows", v => Method = v },
                 { "ComputerName=", "--ComputerName host.example.local", v => ComputerName = v },
                 { "Command=", "--Command calc.exe", v => Command = v },
+                { "Parameters=", "--Parameters", v => Parameters =v },
                 { "h|?|help",  "Show available options", v => showhelp = v != null },
             };
 
@@ -49,7 +51,7 @@ namespace SharpCOM
                     object Item = RemoteComObject.GetType().InvokeMember("Item", BindingFlags.InvokeMethod, null, RemoteComObject, new object[] { });
                     object Document = Item.GetType().InvokeMember("Document", BindingFlags.GetProperty, null, Item, null);
                     object Application = Document.GetType().InvokeMember("Application", BindingFlags.GetProperty, null, Document, null);
-                    Application.GetType().InvokeMember("ShellExecute", BindingFlags.InvokeMethod, null, Application, new object[] { Command, Parameters, Directory, null, 0 });
+                    Application.GetType().InvokeMember("ShellExecute", BindingFlags.InvokeMethod, null, Application, new object[] { BaseCommand, Parameters + " " + Command, Directory, null, 0 });
                 }
                 else if (Method == "MMC")
                 {
@@ -57,7 +59,7 @@ namespace SharpCOM
                     object RemoteComObject = Activator.CreateInstance(ComType);
                     object Document = RemoteComObject.GetType().InvokeMember("Document", BindingFlags.GetProperty, null, RemoteComObject, null);
                     object ActiveView = Document.GetType().InvokeMember("ActiveView", BindingFlags.GetProperty, null, Document, null);
-                    ActiveView.GetType().InvokeMember("ExecuteShellCommand", BindingFlags.InvokeMethod, null, ActiveView, new object[] { Command, null, null, 7 });
+                    ActiveView.GetType().InvokeMember("ExecuteShellCommand", BindingFlags.InvokeMethod, null, ActiveView, new object[] { Command , null , Parameters , 7 });
                 }
                 else if (Method == "ShellBrowserWindow")
                 {
@@ -66,7 +68,7 @@ namespace SharpCOM
                     object RemoteComObject = Activator.CreateInstance(ComType);
                     object Document = RemoteComObject.GetType().InvokeMember("Document", BindingFlags.GetProperty, null, RemoteComObject, null);
                     object Application = Document.GetType().InvokeMember("Application", BindingFlags.GetProperty, null, Document, null);
-                    Application.GetType().InvokeMember("ShellExecute", BindingFlags.InvokeMethod, null, Application, new object[] { Command, Parameters, Directory, null, 0 });
+                    Application.GetType().InvokeMember("ShellExecute", BindingFlags.InvokeMethod, null, Application, new object[] { BaseCommand, Parameters + " " + Command, Directory, null, 0 });
                 }
                 else if (Method == "ExcelDDE")
                 {
